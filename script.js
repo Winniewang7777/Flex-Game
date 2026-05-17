@@ -354,7 +354,7 @@ const gameLevels = [
     {
         id: 1,
         title: "關卡 1：魔法紙箱大開張",
-        scenario: "新買的玻璃紙箱送到了！但是外面的貓咪們找不到自己的專用收納箱。我們必須把玻璃外容器轉化為 Flexbox 空間，貓咪們才能感應到紙箱訊號！",
+        scenario: "新買的紙箱送到了！但是貓咪們找不到自己的專用紙箱。我們必須把外容器轉化為 Flexbox 空間，貓咪們才能找到自己的紙箱！",
         syntax_desc: "<code>display: flex;</code> 是彈性佈局的起點，必須寫在包覆所有貓咪與專屬小紙箱的外容器（紙箱）上，才能啟動它的排列魔法。",
         options: [
             { key: "A", text: ".cat-item { display: flex; }" },
@@ -376,7 +376,7 @@ const gameLevels = [
     {
         id: 2,
         title: "關卡 2：排排坐，吃果果",
-        scenario: "一條長形的玻璃紙箱裡，３隻三花貓想要水平「由左到右」橫向走進屬於牠們的淺橘花色紙箱裡。",
+        scenario: "一個長形的紙箱裡，３隻三花貓想要水平「由左到右」橫向走進屬於牠們的淺橘花色紙箱裡。",
         syntax_desc: "<code>flex-direction</code> 控制主軸的方向。預設值為 <code>row</code>，能命令所有內元件在水平線上由左至右整齊排開。",
         options: [
             { key: "A", text: "flex-direction: row;" },
@@ -398,7 +398,7 @@ const gameLevels = [
     {
         id: 3,
         title: "關卡 3：貓咪貓咪疊羅漢",
-        scenario: "這是一個專為垂直高塔設計的玻璃箱，空間非常窄。三隻貓咪必須「由上往下」垂直排進各自對應的高塔小紙箱中！",
+        scenario: "這是一個專為垂直高塔設計的紙箱，空間非常窄。三隻貓咪必須「由上往下」垂直排進各自對應的高塔小紙箱中！",
         syntax_desc: "當 <code>flex-direction</code> 被設為 <code>column</code> 時，主軸線會被旋轉 90 度，使內元件由上而下進行垂直堆疊排列。",
         options: [
             { key: "A", text: "flex-direction: row;" },
@@ -420,7 +420,7 @@ const gameLevels = [
     {
         id: 4,
         title: "關卡 4：暖爐正下方的 C 位",
-        scenario: "寒冬來襲，大玻璃箱正上方裝了發光的電暖爐。２隻凍壞的貓咪必須被平移到紙箱「水平正中央」的溫暖小紙箱裡吹暖氣！",
+        scenario: "寒冬來襲，大紙箱正上方裝了發熱的電暖爐。２隻凍壞的貓咪必須被平移到紙箱「水平正中央」的溫暖紙箱裡吹暖氣！",
         syntax_desc: "<code>justify-content</code> 負責分配主軸（在預設 row 橫向時為水平向）上的剩餘空間。<code>center</code> 值可將所有元件向中間靠攏。",
         options: [
             { key: "A", text: "justify-content: flex-start;" },
@@ -484,7 +484,7 @@ const gameLevels = [
     {
         id: 7,
         title: "關卡 7 : 高矮胖瘦一條線",
-        scenario: "橫向箱中有大緬因貓與小奶貓。因為身高不同看起來歪斜，請讓大大小小的牠們在「垂直交錯軸」上完全置中，並完美入箱！",
+        scenario: "橫向箱中有大緬因貓與小奶貓。因為身高不同看起來歪斜，請讓大大小小的牠們在「垂直交錯軸」上完全置中，並完美進箱！",
         syntax_desc: "<code>align-items</code> 負責元件在交錯軸（垂直向）上的對齊。<code>center</code> 能把不同高度的貓咪對齊在水平基準線上。",
         options: [
             { key: "A", text: "justify-content: center;" },
@@ -506,7 +506,7 @@ const gameLevels = [
     {
         id: 8,
         title: "關卡 8：液體貓的大滿載！",
-        scenario: "一條小長箱子卻塞了 10 隻橘貓。因為預設不換行，擠成了「瘦長地瓜條」。快開啟換行讓牠們掉進各自的黃橘小箱子裡！",
+        scenario: "一只長箱子卻塞了 10 隻橘貓。因為預設不換行，擠成了「瘦長地瓜條」。快開啟換行讓牠們掉進各自的黃橘小箱子裡！",
         syntax_desc: "Flexbox 預設為 <code>flex-wrap: nowrap;</code>，會強行擠扁寬度。開啟 <code>wrap</code> 後，裝不下的元件就會自動掉到下一排排列。",
         options: [
             { key: "A", text: "flex-wrap: wrap;" },
@@ -535,7 +535,7 @@ const gameLevels = [
     {
         id: 9,
         title: "關卡 9：【⚠️大陷阱】貓樹高塔的左右對齊",
-        scenario: "機台現在被限制在「直向模式 (column)」。高塔紙箱の中間有一個神祕圓形樹洞。貓咪們偏左，請將牠們橫向置中平移入洞！",
+        scenario: "機台現在被限制在「直向模式 (column)」。高塔紙箱的中間有一個神祕圓形樹洞。貓咪們偏左，請將牠們橫向置中平移入洞！",
         syntax_desc: "經典陷阱題！在 <code>column</code> 垂直模式下，<b>主軸變垂直，交錯軸變水平。</b> 因此，要控制「左右水平對齊」必須改用負責交錯軸的 <code>align-items: center;</code>！",
         options: [
             { key: "A", text: "justify-content: center;" },
@@ -578,7 +578,7 @@ const gameLevels = [
 const tourSteps = [
     {
         elementId: "targetBox",
-        title: "🎯 任務目標：讓貓咪完美入箱",
+        title: "🎯 任務目標：讓貓咪完美進箱",
         text: "看到紙箱內淡色、半透明的<b>「目標小影子箱」</b>嗎？您的目標就是透過排版語法把實體貓咪送進對應色的影子中！",
     },
     {
@@ -845,7 +845,7 @@ function renderIntroScreen() {
                 <div class="space-y-4 text-sm text-amber-900/90 leading-relaxed">
                     <p>歡迎來到貓咪咖啡廳！在這個 Flexbox 遊戲中：</p>
                     <ul class="space-y-2 font-bold">
-                        <li class="text-orange-600 flex items-center gap-1.5">📦 玻璃紙箱 ➔ 代表「外容器」(父層)</li>
+                        <li class="text-orange-600 flex items-center gap-1.5">📦 紙箱 ➔ 代表「外容器」(父層)</li>
                         <li class="text-amber-800 flex items-center gap-1.5">🐱 貓咪 ➔ 代表「內元件」(子層)</li>
                     </ul>
                     <div class="bg-white/70 p-4 rounded-2xl border border-orange-200/50 text-xs text-orange-800 shadow-sm leading-relaxed">
@@ -1233,7 +1233,7 @@ function renderLevelContent(card, catBox, targetBox) {
         } else {
             // Cute customized cat encouraging quotes per level (Fixed levels 1, 2, 3, 5, 8 to avoid direct word spoils)
             const catQuotes = [
-                "喵嗚～新買的磨砂玻璃大紙箱耶！人家最喜歡鑽箱子了，快啟動排版魔法讓我們通通窩進去吧！📦",
+                "喵嗚～新買的磨砂大紙箱耶！人家最喜歡鑽箱子了，快啟動排版魔法讓我們通通窩進去吧！📦",
                 "喵～隔壁的三花說想跟我們肩並肩橫著坐成一列，像小火車那樣手拉手排隊，要怎麼對齊呢？🐾",
                 "喵哈～這個垂直高塔窄窄長長的，大家想玩貓咪疊羅漢，一個頂著一個由上往下疊，快幫我們轉個排列方向吧！⬇️",
                 "（呼嚕呼嚕...）電暖爐好溫暖喔，快幫我們移到水平正中間的 C 位吹暖氣！☀️",
