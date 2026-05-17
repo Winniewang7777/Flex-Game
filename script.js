@@ -19,6 +19,7 @@ const _audioCtx = (() => {
 })();
 
 // Synthesizing sound effects with Web Audio API (Fully offline and crash-proof)
+// 🐾 已替換為您所提供的物理合成「高級擬真 Me-ow」音效曲線，且音量調低了 40% (0.3 -> 0.18)
 function playMeow(pitchMultiplier = 1) {
     if (isMuted || !_audioCtx) return;
     try {
@@ -27,44 +28,43 @@ function playMeow(pitchMultiplier = 1) {
             _audioCtx.resume();
         }
         const osc = _audioCtx.createOscillator();
-        const osc2 = _audioCtx.createOscillator();
-        const gain = _audioCtx.createGain();
+        const gainNode = _audioCtx.createGain();
+        const filterNode = _audioCtx.createBiquadFilter();
+
+        osc.type = 'sawtooth';
         
-        osc.type = 'triangle';
-        osc2.type = 'sawtooth';
-        
-        const t = _audioCtx.currentTime;
-        osc.frequency.setValueAtTime(360 * pitchMultiplier, t);
-        osc.frequency.exponentialRampToValueAtTime(740 * pitchMultiplier, t + 0.08);
-        osc.frequency.exponentialRampToValueAtTime(460 * pitchMultiplier, t + 0.26);
-        
-        osc2.frequency.setValueAtTime(362 * pitchMultiplier, t);
-        osc2.frequency.exponentialRampToValueAtTime(742 * pitchMultiplier, t + 0.08);
-        osc2.frequency.exponentialRampToValueAtTime(462 * pitchMultiplier, t + 0.26);
-        
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.12, t + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.26);
-        
-        const filter = _audioCtx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1400, t);
-        
-        osc.connect(gain);
-        osc2.connect(gain);
-        gain.connect(filter);
-        filter.connect(_audioCtx.destination);
-        
-        osc.start(t);
-        osc2.start(t);
-        osc.stop(t + 0.28);
-        osc2.stop(t + 0.28);
+        osc.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.connect(_audioCtx.destination);
+
+        const now = _audioCtx.currentTime;
+        const duration = 0.85;
+
+        // 🐾 音調曲線設定 (Me-ow) - 乘上 pitchMultiplier 以保留不同貓咪的聲音寬度
+        osc.frequency.setValueAtTime(900 * pitchMultiplier, now);
+        osc.frequency.exponentialRampToValueAtTime(1220 * pitchMultiplier, now + (duration * 0.22));
+        osc.frequency.exponentialRampToValueAtTime(355 * pitchMultiplier, now + duration);
+
+        // 🐾 濾波器設定 (讓聲音更溫和、更像軟萌的真貓)
+        filterNode.type = 'lowpass';
+        filterNode.Q.setValueAtTime(5.5, now);
+        filterNode.frequency.setValueAtTime(1750, now);
+        filterNode.frequency.exponentialRampToValueAtTime(788, now + duration);
+
+        // 🐾 音量包絡設計 (音量調低40%：原 0.3 的 60% 為 0.18)
+        gainNode.gain.setValueAtTime(0.001, now);
+        gainNode.gain.linearRampToValueAtTime(0.18, now + (duration * 0.08));
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        osc.start(now);
+        osc.stop(now + duration);
     } catch (e) {
         console.log("Web Audio blocked/not supported.", e);
     }
 }
 
 // Play dual meow on game enter success
+// 重複
 function playSuccessMelody() {
     playMeow(1.0);
     setTimeout(() => {
@@ -141,6 +141,7 @@ function showResetModal() {
     content.classList.add('scale-100');
 }
 
+// 修復4：Modal 競態問題（直接移除條件判斷，無條件在動畫後隱藏）
 function hideResetModal() {
     const modal = document.getElementById('resetModal');
     const content = document.getElementById('resetModalContent');
@@ -247,6 +248,7 @@ function getCatSVG(type, state = 'happy') {
         `;
     }
 
+    // 修復1：還原 getCatSVG 中 King 貓皇冠帽子的處理邏輯
     let extraHat = "";
     if (type === 'king' && state === 'sleepy') {
         extraHat = `
@@ -439,7 +441,7 @@ const gameLevels = [
     {
         id: 5,
         title: "關卡 5：老大不見面！死守紙箱兩端",
-        scenario: "箱子裡有兩隻脾氣暴躁的貓老大（黑貓與賓士貓），一碰頭就打架。請用排版指令把牠們推到「最左邊」與「最right邊」的邊牆收納紙箱裡！",
+        scenario: "箱子裡有兩隻脾氣暴躁的貓老大（黑貓與賓士貓），一碰頭就打架。請用排版指令把牠們推到「最左邊」與「最右邊」的邊牆收納紙箱裡！",
         syntax_desc: "<code>justify-content: space-between;</code> 會將多餘空間分配在元件之間。最左右端的元件將會死死貼緊邊緣。",
         options: [
             { key: "A", text: "justify-content: space-between;" },
@@ -714,6 +716,8 @@ function showTourStep(stepIdx) {
     }
 }
 
+// Move to the next Spotlight Tour step
+// 重複
 function nextTourStep() {
     if (gameState.tourState.step < tourSteps.length - 1) {
         gameState.tourState.step++;
@@ -758,6 +762,7 @@ function endTour() {
 }
 
 // Dynamic Axis Direction Updater
+// 修復1（大小寫 ID 容錯）：加入 prefix + 'AxisMain' / 'AxisCross' 雙峰駝峰安全容錯
 function updateAxisDisplay(direction, prefix = '') {
     const mainId = prefix ? (prefix + 'AxisMain') : 'axisMain';
     const crossId = prefix ? (prefix + 'AxisCross') : 'axisCross';
@@ -780,6 +785,7 @@ function updateAxisDisplay(direction, prefix = '') {
     }
 }
 
+// 修復5：Resize 時 spotlight 加上 requestAnimationFrame，等 DOM 穩定後重算位置
 window.addEventListener('resize', () => {
     if (gameState.tourState.active) {
         requestAnimationFrame(() => {
@@ -895,7 +901,7 @@ function renderIntroScreen() {
                     
                     <!-- LIVE DEMO CONTROLLERS IN CARD -->
                     <div class="bg-amber-100/60 p-4 rounded-2xl border border-amber-200/60 flex flex-col gap-2.5">
-                        <span class="text-xs font-bold text-amber-900">👇 點擊下方切換方向，看右側雙軸如何對調旋轉：</span>
+                        <span class="text-xs font-bold text-amber-950">👇 點擊下方切換方向，看右側雙軸如何對調旋轉：</span>
                         <div class="grid grid-cols-2 gap-2">
                             <button id="introRowBtn" onclick="toggleIntroDirection('row')" class="py-2 px-3 rounded-xl border border-sky-300 bg-sky-50 text-sky-800 font-bold text-xs transition shadow-sm">
                                 Row 橫向排列 ➡️
@@ -988,6 +994,7 @@ function toggleIntroDirection(dir) {
     previewBox.style.flexDirection = dir;
     playMeow(dir === 'row' ? 1.15 : 0.85);
 
+    // Dynamically adjust buttons styles in Card on Page 2
     const rowBtn = document.getElementById('introRowBtn');
     const colBtn = document.getElementById('introColBtn');
 
@@ -1001,21 +1008,28 @@ function toggleIntroDirection(dir) {
         }
     }
 
+    // Instantly rotate axis labels inside onboarding card sandbox
     updateAxisDisplay(dir, 'intro');
 }
 
 // TRANSITION FROM FULLSCREEN INTRO TO MAIN SPLITSCREEN LEVEL GAMEPLAY
 function enterFormalGame() {
     gameState.mode = 'game';
+    
+    // Play rewarding double meow melody
     playSuccessMelody();
+
+    // Render level first
     render();
 
+    // If first time landing on levels screen, fire the spotlight pointer tour automatically
     if (localStorage.getItem('cat_flex_tour_done') !== 'true') {
         setTimeout(startTour, 500);
     }
 }
 
 // RENDER CORE LEVELS PLATFORM (SCREEN 2)
+// 修復6：移除寫死的 'row'，改為讀當前關卡的實際方向，防止轉場標籤閃爍與非預期對齊問題
 function renderGameScreen() {
     const card = document.getElementById('contentCard');
     const catBox = document.getElementById('catBox');
@@ -1029,10 +1043,12 @@ function renderGameScreen() {
     const axisMain = document.getElementById('axisMain');
     const axisCross = document.getElementById('axisCross');
 
+    // 根據當前關卡的實際方向來決定
     const currentLevel = gameLevels[gameState.currentLevelIndex];
     const currentDirection = currentLevel.initialStyles.flexDirection || 'row';
     updateAxisDisplay(currentDirection);
 
+    // 補回被誤刪的裝飾重設程式碼，避免跨關卡或初始載入殘留
     if (glowHeater) glowHeater.classList.add('opacity-0');
     if (emojiHeater) emojiHeater.classList.add('opacity-0');
     if (guideLine7) guideLine7.classList.add('opacity-0');
@@ -1094,19 +1110,25 @@ function updateCSSEditor(currentLevel) {
 
 function renderLevelContent(card, catBox, targetBox) {
     const currentLevel = gameLevels[gameState.currentLevelIndex];
+    
+    // Build current CSS Style to simulate on play cat container
     let appliedStyles = gameState.isCurrentLevelSolved ? currentLevel.correctStyles : currentLevel.initialStyles;
 
+    // Apply style dynamically on Carton Box
     for(let key in appliedStyles) {
         catBox.style[key] = appliedStyles[key];
     }
 
+    // Update interactive style editor highlights
     updateCSSEditor(currentLevel);
 
+    // Apply perfect guide styles on ghost targetBox
     targetBox.style.display = 'flex';
     for(let key in currentLevel.correctStyles) {
         targetBox.style[key] = currentLevel.correctStyles[key];
     }
 
+    // Custom level details decoration inside Box
     if (currentLevel.id === 4) {
         const glowHeater = document.getElementById('glowHeater');
         const emojiHeater = document.getElementById('emojiHeater');
@@ -1121,6 +1143,7 @@ function renderLevelContent(card, catBox, targetBox) {
         const axisCross = document.getElementById('axisCross');
         if (treeHollow) treeHollow.classList.remove('opacity-0');
         
+        // Align axis labels to column mode (Vertical = Main, Horizontal = Cross)
         updateAxisDisplay('column');
 
         if (axisMain) axisMain.style.opacity = '1';
@@ -1137,12 +1160,14 @@ function renderLevelContent(card, catBox, targetBox) {
         }
     }
 
+    // Adjust box border style on success
     if (gameState.isCurrentLevelSolved) {
         catBox.classList.add('success');
     } else {
         catBox.classList.remove('success');
     }
 
+    // Cat state based on solved state
     let catExpression = 'happy';
     if (!gameState.isCurrentLevelSolved) {
         if (currentLevel.id === 5) catExpression = 'sparking'; 
@@ -1152,6 +1177,7 @@ function renderLevelContent(card, catBox, targetBox) {
         if (currentLevel.id === 10) catExpression = 'sleepy';  
     }
 
+    // Always render empty target box on bottom (Will NOT get deleted when answer is correct!)
     targetBox.innerHTML = '';
     currentLevel.cats.forEach(cat => {
         const shadowEl = document.createElement('div');
@@ -1169,11 +1195,13 @@ function renderLevelContent(card, catBox, targetBox) {
         targetBox.appendChild(shadowEl);
     });
 
+    // RENDER USER-CONTROLLED REAL CATS IN CAT BOX
     catBox.innerHTML = '';
     currentLevel.cats.forEach(cat => {
         const catEl = document.createElement('div');
         catEl.className = `cat-item relative p-1`;
         
+        // Class & sizing based on levels
         if (cat.size === 'small') {
             catEl.classList.add('w-12', 'h-12');
         } else if (cat.size === 'medium') {
@@ -1195,6 +1223,7 @@ function renderLevelContent(card, catBox, targetBox) {
         catBox.appendChild(catEl);
     });
 
+    // UPDATE BOTTOM ENCOURAGEMENT/HINT TIP DYNAMICALLY (Fixes the state preservation bug and applies non-spoiler murmurs)
     const bottomHint = document.getElementById('bottomHint');
     if (bottomHint) {
         if (gameState.isCurrentLevelSolved) {
@@ -1202,9 +1231,10 @@ function renderLevelContent(card, catBox, targetBox) {
         } else if (gameState.wrongSelections.length > 0) {
             bottomHint.innerHTML = `❌ 哎呀，不對唷！${currentLevel.hint}`;
         } else {
+            // Cute customized cat encouraging quotes per level (Fixed levels 1, 2, 3, 5, 8 to avoid direct word spoils)
             const catQuotes = [
                 "喵嗚～新買的磨砂玻璃大紙箱耶！人家最喜歡鑽箱子了，快啟動排版魔法讓我們通通窩進去吧！📦",
-                "喵～隔邊的三花說想跟我們肩並肩橫著坐成一列，像小火車那樣手拉手排隊，要怎麼對齊呢？🐾",
+                "喵～隔壁的三花說想跟我們肩並肩橫著坐成一列，像小火車那樣手拉手排隊，要怎麼對齊呢？🐾",
                 "喵哈～這個垂直高塔窄窄長長的，大家想玩貓咪疊羅漢，一個頂著一個由上往下疊，快幫我們轉個排列方向吧！⬇️",
                 "（呼嚕呼嚕...）電暖爐好溫暖喔，快幫我們移到水平正中間的 C 位吹暖氣！☀️",
                 "黑貓跟賓士貓在哈氣了！快用分配間隔的魔法幫牠們拉開最大安全牆距，中間空出來！🙀",
@@ -1218,6 +1248,7 @@ function renderLevelContent(card, catBox, targetBox) {
         }
     }
 
+    // LEVEL PROGRESS DOTS
     let dotsHTML = `<div class="flex gap-1.5 flex-wrap my-3">`;
     gameLevels.forEach((lvl, idx) => {
         let dotClass = "bg-white/40 text-amber-900 hover:bg-white/80";
@@ -1234,6 +1265,7 @@ function renderLevelContent(card, catBox, targetBox) {
     });
     dotsHTML += `</div>`;
 
+    // RENDER LEFT INTERFACE CARD
     let solvedMessageHTML = "";
     let nextButtonHTML = "";
 
@@ -1361,6 +1393,7 @@ function triggerHearts() {
     }
 }
 
+// Celebrate game clearing
 function triggerConfetti() {
     const catBox = document.getElementById('catBox');
     const items = ['🥫', '🐟', '👑', '✨', '⭐', '🌈'];
@@ -1413,6 +1446,7 @@ function switchMode(mode) {
     render();
 }
 
+// 修復2：window.onload 直接讀取 localStorage 並安全恢復歷史進度，隨後渲染畫面
 window.onload = function() {
     const saved = localStorage.getItem('cat_flex_unlocked');
     if (saved !== null) {
